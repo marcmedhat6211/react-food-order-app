@@ -10,9 +10,26 @@ const defaultCartState = {
 const cartReducer = (state, action) => {
   if ((action.type = "ADD")) {
     // concat is a js method that returns a new array with the updated items, this is a better approach because of the reference array in memory
-    const updatedItems = state.items.concat(action.item);
     const updatedTotalAmount =
       state.totalAmount + action.item.price * action.item.amount;
+
+    // the find index function takes a function as a parameter, and that parameter function returns boolean, findIndex on the other hand returns the index if that condition is met
+    const existingCartItemIndex = state.items.findIndex(
+      (item) => item.id === action.item.id
+    );
+    const existingCartItem = state.items[existingCartItemIndex];
+    let updatedItems;
+
+    if (existingCartItem) {
+      const updatedItem = {
+        ...existingCartItem,
+        amount: existingCartItem.amount + action.item.amount,
+      };
+      updatedItems = [...state.items];
+      updatedItems[existingCartItemIndex] = updatedItem;
+    } else {
+      updatedItems = state.items.concat(action.item);
+    }
 
     return {
       items: updatedItems,
